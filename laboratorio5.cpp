@@ -95,13 +95,57 @@ long long calcularSumatoriaCubos(long long n, long long limiteSuperior) {
     return sumatoria;
 }
 
+// Sumatoria 9
+// Funcion que calcula la sumatoria de sin(n) desde n hasta limite superior
+long long calcularSumatoriaSin(long long n, long long limiteSuperior) {
+    long long sumatoria = 0;
+    for (long long i = n; i <= limiteSuperior; ++i) {
+        sumatoria += sin(i);
+    }
+    return sumatoria;
+}
+
+// Sumatoria 10
+// Funcion que calcula la sumatoria de 1/n! desde n hasta limite superior
+long long calcularSumatoriaFactorial(long long n, long long limiteSuperior) {
+    long long sumatoria = 0;
+    long long factorial = 1;
+    for (long long i = n; i <= limiteSuperior; ++i) {
+        factorial *= i;
+        sumatoria += 1 / factorial;
+    }
+    return sumatoria;
+}
+
+// Sumatoria 11
+// Funcion que calcula la sumatoria de n * (n+1)/2 desde n hasta limite superior
+long long calcularSumatoriaPentagonal(long long n, long long limiteSuperior) {
+    long long sumatoria = 0;
+    for (long long i = n; i <= limiteSuperior; i++) {
+        sumatoria += i * (i + 1) / 2;
+    }
+    return sumatoria;
+}
+
+// Sumatoria 12
+// Funcion que calcula la sumatoria de 2n-n/n(n+1 desde n hasta limite superior
+long long calcularSumatoriaPentagonal2(long long n, long long limiteSuperior) {
+    long long sumatoria = 0;
+    for (long long i = n; i <= limiteSuperior; i++) {
+        sumatoria += (2 * i - n) / (i * (i + 1));
+    }
+    return sumatoria;
+}
+
+
 // Barrrera para sincronizar los hilos antes de calcular el promedio
 //pthread_barrier_t barreraPromedio;
 
 //PROMEDIO
 // Funcion que calcula el promedio de los resultados de las sumatorias
-long long calcularPromedio(long long resultado1, long long resultado2, long long resultado3, long long resultado4, long long resultado5, long long resultado6, long long resultado7, long long resultado8) {
-    return (resultado1 + resultado2 + resultado3 + resultado4 + resultado5 + resultado6 + resultado7 + resultado8) / 8;
+long long calcularPromedio(long long resultado1, long long resultado2, long long resultado3, long long resultado4, long long resultado5, long long resultado6, long long resultado7, long long resultado8, long long resultado9,
+    long long resultado10, long long resultado11, long long resultado12) {
+    return (resultado1 + resultado2 + resultado3 + resultado4 + resultado5 + resultado6 + resultado7 + resultado8 + resultado9 + resultado10 + resultado11 + resultado12) / 12;
 }
 
 // Estructura para pasar argumentos a la función de trabajo del hilo
@@ -121,6 +165,10 @@ pthread_mutex_t mutexRaiz;
 pthread_mutex_t mutexDivididos2;
 pthread_mutex_t mutexLog;
 pthread_mutex_t mutexCubos;
+pthread_mutex_t mutexSin;
+pthread_mutex_t mutexFactorial;
+pthread_mutex_t mutexPentagonal;
+pthread_mutex_t mutexPentagonal2;
 
 // Función para inicializar los mutex
 void inicializarMutex() {
@@ -132,6 +180,10 @@ void inicializarMutex() {
     pthread_mutex_init(&mutexDivididos2, nullptr);
     pthread_mutex_init(&mutexLog, nullptr);
     pthread_mutex_init(&mutexCubos, nullptr);
+    pthread_mutex_init(&mutexSin, nullptr);
+    pthread_mutex_init(&mutexFactorial, nullptr);
+    pthread_mutex_init(&mutexPentagonal, nullptr);
+    pthread_mutex_init(&mutexPentagonal2, nullptr);
 }
 
 // Función de trabajo del hilo para calcular la sumatoria
@@ -156,6 +208,14 @@ void* calcularSumatoriaThread(void* arg) {
         pthread_mutex_lock(&mutexLog);
     } else if (args->calcularSumatoria == calcularSumatoriaCubos) {
         pthread_mutex_lock(&mutexCubos);
+    } else if (args->calcularSumatoria == calcularSumatoriaSin) {
+        pthread_mutex_lock(&mutexSin);
+    } else if (args->calcularSumatoria == calcularSumatoriaFactorial) {
+        pthread_mutex_lock(&mutexFactorial);
+    } else if (args->calcularSumatoria == calcularSumatoriaPentagonal) {
+        pthread_mutex_lock(&mutexPentagonal);
+    } else if (args->calcularSumatoria == calcularSumatoriaPentagonal2) {
+        pthread_mutex_lock(&mutexPentagonal2);
     }
    
 
@@ -178,6 +238,14 @@ void* calcularSumatoriaThread(void* arg) {
         pthread_mutex_unlock(&mutexLog);
     } else if (args->calcularSumatoria == calcularSumatoriaCubos) {
         pthread_mutex_unlock(&mutexCubos);
+    } else if (args->calcularSumatoria == calcularSumatoriaSin) {
+        pthread_mutex_unlock(&mutexSin);
+    } else if (args->calcularSumatoria == calcularSumatoriaFactorial) {
+        pthread_mutex_unlock(&mutexFactorial);
+    } else if (args->calcularSumatoria == calcularSumatoriaPentagonal) {
+        pthread_mutex_unlock(&mutexPentagonal);
+    } else if (args->calcularSumatoria == calcularSumatoriaPentagonal2) {
+        pthread_mutex_unlock(&mutexPentagonal2);
     }
         return nullptr;
     }
@@ -194,6 +262,10 @@ int main() {
     pthread_t* threadsLog = new pthread_t[numHilos];
     pthread_t* threadsDivididos2 = new pthread_t[numHilos];
     pthread_t* threadsCubos = new pthread_t[numHilos];
+    pthread_t* threadsSin = new pthread_t[numHilos];
+    pthread_t* threadsFactorial = new pthread_t[numHilos];
+    pthread_t* threadsPentagonal = new pthread_t[numHilos];
+    pthread_t* threadsPentagonal2 = new pthread_t[numHilos];
     ThreadArgs* threadArgsNaturales = new ThreadArgs[numHilos];
     ThreadArgs* threadArgsCuadrados = new ThreadArgs[numHilos];
     ThreadArgs* threadArgsDivididos = new ThreadArgs[numHilos];
@@ -202,11 +274,29 @@ int main() {
     ThreadArgs* threadArgsDivididos2 = new ThreadArgs[numHilos];
     ThreadArgs* threadArgsLog = new ThreadArgs[numHilos];
     ThreadArgs* threadArgsCubos = new ThreadArgs[numHilos];
+    ThreadArgs* threadArgsSin = new ThreadArgs[numHilos];
+    ThreadArgs* threadArgsFactorial = new ThreadArgs[numHilos];
+    ThreadArgs* threadArgsPentagonal = new ThreadArgs[numHilos];   
+    ThreadArgs* threadArgsPentagonal2 = new ThreadArgs[numHilos];
 
     // bienvenida
     printf("----------------------------------\n");
     printf("BIENVENIDO USUARIO!\n");
     printf("Este programa calcula las sumatorias en paralelo en un rango dado definido por ti.\n");
+    printf("Estas son las sumatorias que se calcularan: .\n");
+    printf("1. Sumatoria de números naturales desde n hasta limite superior.\n");
+    printf("2. Sumatoria de n^2 desde n hasta limite superior.\n");
+    printf("3. Sumatoria de n/2 desde n hasta limite superior.\n");
+    printf("4. Sumatoria de 1/n^2 desde n hasta limite superior.\n");
+    printf("5. Sumatoria de la raiz cuadrada de n desde n hasta limite superior.\n");
+    printf("6. Sumatoria de 1/2*n desde n hasta limite superior.\n");
+    printf("7. Sumatoria de log(n) desde n hasta limite superior.\n");
+    printf("8. Sumatoria de n^3 desde n hasta limite superior.\n");
+    printf("9. Sumatoria de sin(n) desde n hasta limite superior.\n");
+    printf("10. Sumatoria de 1/n! desde n hasta limite superior.\n");
+    printf("11. Sumatoria de n * (n+1)/2 desde n hasta limite superior.\n");
+    printf("12. Sumatoria de 2n-n/n(n+1 desde n hasta limite superior.\n");
+    printf("\n");
     printf("Por favor ingresa los datos que se te piden a continuación.\n");
     printf("----------------------------------\n");
 
@@ -322,6 +412,58 @@ int main() {
     // Se terminan de calcular los tiempos de ejecución de la octava sumatoria  
     auto endTimeSumatoria8 = high_resolution_clock::now();
 
+    // Se inicia a calcular el tiempo de ejecución de la novena sumatoria
+    auto startTimeSumatoria9 = high_resolution_clock::now();
+    // Dividir el trabajo entre los hilos para la sumatoria de divididos
+    long long rangoSin = (limiteSuperior - limiteInferior + 1) / numHilos;
+    for (int i = 0; i < numHilos; i++) {
+        threadArgsSin[i].nInicio = limiteInferior + i * rangoSin;
+        threadArgsSin[i].nFin = threadArgsSin[i].nInicio + rangoSin - 1;
+        threadArgsSin[i].calcularSumatoria = calcularSumatoriaSin;
+        pthread_create(&threadsSin[i], nullptr, calcularSumatoriaThread, &threadArgsSin[i]);
+    }
+    // Se terminan de calcular los tiempos de ejecución de la novena sumatoria
+    auto endTimeSumatoria9 = high_resolution_clock::now();
+
+    // Se inicia a calcular el tiempo de ejecución de la decima sumatoria
+    auto startTimeSumatoria10 = high_resolution_clock::now();
+    // Dividir el trabajo entre los hilos para la sumatoria de divididos
+    long long rangoFactorial = (limiteSuperior - limiteInferior + 1) / numHilos;
+    for (int i = 0; i < numHilos; i++) {
+        threadArgsFactorial[i].nInicio = limiteInferior + i * rangoFactorial;
+        threadArgsFactorial[i].nFin = threadArgsFactorial[i].nInicio + rangoFactorial - 1;
+        threadArgsFactorial[i].calcularSumatoria = calcularSumatoriaFactorial;
+        pthread_create(&threadsFactorial[i], nullptr, calcularSumatoriaThread, &threadArgsFactorial[i]);
+    }
+    // Se terminan de calcular los tiempos de ejecución de la decima sumatoria
+    auto endTimeSumatoria10 = high_resolution_clock::now();
+
+    // Se inicia a calcular el tiempo de ejecución de la onceava sumatoria
+    auto startTimeSumatoria11 = high_resolution_clock::now();
+    // Dividir el trabajo entre los hilos para la sumatoria de divididos
+    long long rangoPentagonal = (limiteSuperior - limiteInferior + 1) / numHilos;
+    for (int i = 0; i < numHilos; i++) {
+        threadArgsPentagonal[i].nInicio = limiteInferior + i * rangoPentagonal;
+        threadArgsPentagonal[i].nFin = threadArgsPentagonal[i].nInicio + rangoPentagonal - 1;
+        threadArgsPentagonal[i].calcularSumatoria = calcularSumatoriaPentagonal;
+        pthread_create(&threadsPentagonal[i], nullptr, calcularSumatoriaThread, &threadArgsPentagonal[i]);
+    }
+    // Se terminan de calcular los tiempos de ejecución de la onceava sumatoria
+    auto endTimeSumatoria11 = high_resolution_clock::now();
+
+    // Se inicia a calcular el tiempo de ejecución de la doceava sumatoria
+    auto startTimeSumatoria12 = high_resolution_clock::now();
+    // Dividir el trabajo entre los hilos para la sumatoria de divididos
+    long long rangoPentagonal2 = (limiteSuperior - limiteInferior + 1) / numHilos;
+    for (int i = 0; i < numHilos; i++) {
+        threadArgsPentagonal2[i].nInicio = limiteInferior + i * rangoPentagonal2;
+        threadArgsPentagonal2[i].nFin = threadArgsPentagonal2[i].nInicio + rangoPentagonal2 - 1;
+        threadArgsPentagonal2[i].calcularSumatoria = calcularSumatoriaPentagonal2;
+        pthread_create(&threadsPentagonal2[i], nullptr, calcularSumatoriaThread, &threadArgsPentagonal2[i]);
+    }
+    // Se terminan de calcular los tiempos de ejecución de la doceava sumatoria
+    auto endTimeSumatoria12 = high_resolution_clock::now();
+
     // Inicializar la barrera para sincronizar los hilos antes de calcular el promedio
     //pthread_barrier_init(&barreraPromedio, nullptr, numHilos * 2);
 
@@ -335,6 +477,10 @@ int main() {
         pthread_join(threadsDivididos2[i], nullptr);
         pthread_join(threadsLog[i], nullptr);
         pthread_join(threadsCubos[i], nullptr);
+        pthread_join(threadsSin[i], nullptr);
+        pthread_join(threadsFactorial[i], nullptr);
+        pthread_join(threadsPentagonal[i], nullptr);
+        pthread_join(threadsPentagonal2[i], nullptr);
     }
 
     // Atravesar la barrera para sincronizar los hilos antes de calcular el promedio
@@ -349,6 +495,10 @@ int main() {
     long long resultadoDivididos2 = 0;
     long long resultadoLog = 0;
     long long resultadoCubos = 0;
+    long long resultadoSin = 0;
+    long long resultadoFactorial = 0;
+    long long resultadoPentagonal = 0;
+    long long resultadoPentagonal2 = 0;
 
     for (int i = 0; i < numHilos; ++i) {
         resultadoNaturales += threadArgsNaturales[i].resultado;
@@ -359,41 +509,58 @@ int main() {
         resultadoDivididos2 += threadArgsDivididos2[i].resultado;
         resultadoLog += threadArgsLog[i].resultado;
         resultadoCubos += threadArgsCubos[i].resultado;
+        resultadoSin += threadArgsSin[i].resultado;
+        resultadoFactorial += threadArgsFactorial[i].resultado;
+        resultadoPentagonal += threadArgsPentagonal[i].resultado;
+        resultadoPentagonal2 += threadArgsPentagonal2[i].resultado;
     }
 
     // Calcular el promedio de los resultados de ambas sumatorias
-    long long promedio = calcularPromedio(resultadoNaturales, resultadoCuadrados, resultadoDivididos, resultadoInversos, resultadoRaiz, resultadoDivididos2, resultadoLog, resultadoCubos);
+    long long promedio = calcularPromedio(resultadoNaturales, resultadoCuadrados, resultadoDivididos, resultadoInversos, resultadoRaiz, resultadoDivididos2, resultadoLog, resultadoCubos,
+     resultadoSin, resultadoFactorial, resultadoPentagonal, resultadoPentagonal2);
 
     // Imprimir los resultados de ambas sumatorias
     printf("---RESULTADOS DE LAS SUMATORIAS------------\n");
-    cout << "Resultado de la sumatoria de números naturales: " << resultadoNaturales << endl;
-    cout << "Resultado de la sumatoria de cuadrados: " << resultadoCuadrados << endl;
-    cout << "Resultado de la sumatoria de divididos: " << resultadoDivididos << endl;
-    cout << "Resultado de la sumatoria de inversos: " << resultadoInversos << endl;
-    cout << "Resultado de la sumatoria de raiz: " << resultadoRaiz << endl;
-    cout << "Resultado de la sumatoria de divididos2: " << resultadoDivididos2 << endl;
-    cout << "Resultado de la sumatoria de log: " << resultadoLog << endl;
-    cout << "Resultado de la sumatoria de cubos: " << resultadoCubos << endl;
-     printf("\n");
+    cout << "Resultado de la primera sumatoria: " << resultadoNaturales << endl;
+    cout << "Resultado de la segunda sumatoria: " << resultadoCuadrados << endl;
+    cout << "Resultado de la tercera sumatoria: " << resultadoDivididos << endl;
+    cout << "Resultado de la cuarta sumatoria: " << resultadoInversos << endl;
+    cout << "Resultado de la quinta sumatoria: " << resultadoRaiz << endl;
+    cout << "Resultado de la sexta sumatoria: " << resultadoDivididos2 << endl;
+    cout << "Resultado de la septima sumatoria: " << resultadoLog << endl;
+    cout << "Resultado de la octava sumatoria: " << resultadoCubos << endl;
+    cout << "Resultado de la novena sumatoria: " << resultadoSin << endl;
+    cout << "Resultado de la decima sumatoria: " << resultadoFactorial << endl;
+    cout << "Resultado de la onceava sumatoria: " << resultadoPentagonal << endl;
+    cout << "Resultado de la doceava sumatoria: " << resultadoPentagonal2 << endl;
+    printf("\n");
 
     // Imprimir los tiempos de ejecución de ambas sumatorias
     printf("---TIEMPOS DE EJECUCIÓN--------------------\n");
     auto durationSumatoria1 = duration_cast<microseconds>(endTimeSumatoria1 - startTimeSumatoria1);
-    cout << "Tiempo de ejecución de la sumatoria de números naturales: " << durationSumatoria1.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la primera sumatoria: " << durationSumatoria1.count() << " microsegundos" << endl;
     auto durationSumatoria2 = duration_cast<microseconds>(endTimeSumatoria2 - startTimeSumatoria2);
-    cout << "Tiempo de ejecución de la sumatoria de cuadrados: " << durationSumatoria2.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la segunda sumatoria: " << durationSumatoria2.count() << " microsegundos" << endl;
     auto durationSumatoria3 = duration_cast<microseconds>(endTimeSumatoria3 - startTimeSumatoria3);
-    cout << "Tiempo de ejecución de la sumatoria de divididos: " << durationSumatoria3.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la tercera sumatoria: " << durationSumatoria3.count() << " microsegundos" << endl;
     auto durationSumatoria4 = duration_cast<microseconds>(endTimeSumatoria4 - startTimeSumatoria4);
-    cout << "Tiempo de ejecución de la sumatoria de inversos: " << durationSumatoria4.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la cuarta sumatoria: " << durationSumatoria4.count() << " microsegundos" << endl;
     auto durationSumatoria5 = duration_cast<microseconds>(endTimeSumatoria5 - startTimeSumatoria5);
-    cout << "Tiempo de ejecución de la sumatoria de raiz: " << durationSumatoria5.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la quinta sumatoria: " << durationSumatoria5.count() << " microsegundos" << endl;
     auto durationSumatoria6 = duration_cast<microseconds>(endTimeSumatoria6 - startTimeSumatoria6);
-    cout << "Tiempo de ejecución de la sumatoria de divididos2: " << durationSumatoria6.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la sexta sumatoria: " << durationSumatoria6.count() << " microsegundos" << endl;
     auto durationSumatoria7 = duration_cast<microseconds>(endTimeSumatoria7 - startTimeSumatoria7);
-    cout << "Tiempo de ejecución de la sumatoria de log: " << durationSumatoria7.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la septima sumatoria: " << durationSumatoria7.count() << " microsegundos" << endl;
     auto durationSumatoria8 = duration_cast<microseconds>(endTimeSumatoria8 - startTimeSumatoria8);
-    cout << "Tiempo de ejecución de la sumatoria de cubos: " << durationSumatoria8.count() << " microsegundos" << endl;
+    cout << "Tiempo de ejecución de la octava sumatoria: " << durationSumatoria8.count() << " microsegundos" << endl;
+    auto durationSumatoria9 = duration_cast<microseconds>(endTimeSumatoria9 - startTimeSumatoria9);
+    cout << "Tiempo de ejecución de la novena sumatoria: " << durationSumatoria9.count() << " microsegundos" << endl;
+    auto durationSumatoria10 = duration_cast<microseconds>(endTimeSumatoria10 - startTimeSumatoria10);
+    cout << "Tiempo de ejecución de la decima sumatoria: " << durationSumatoria10.count() << " microsegundos" << endl;
+    auto durationSumatoria11 = duration_cast<microseconds>(endTimeSumatoria11 - startTimeSumatoria11);
+    cout << "Tiempo de ejecución de la onceava sumatoria: " << durationSumatoria11.count() << " microsegundos" << endl;
+    auto durationSumatoria12 = duration_cast<microseconds>(endTimeSumatoria12 - startTimeSumatoria12);
+    cout << "Tiempo de ejecución de la doceava sumatoria: " << durationSumatoria12.count() << " microsegundos" << endl;
 
     // Imprimir el promedio de los resultados 
     printf("\n");
@@ -412,6 +579,10 @@ int main() {
     delete[] threadsDivididos2;
     delete[] threadsLog;
     delete[] threadsCubos;
+    delete[] threadsSin;
+    delete[] threadsFactorial;
+    delete[] threadsPentagonal;
+    delete[] threadsPentagonal2;
 
     // Destruir la barrera
     //pthread_barrier_destroy(&barreraPromedio);
@@ -425,6 +596,10 @@ int main() {
     pthread_mutex_destroy(&mutexDivididos2);
     pthread_mutex_destroy(&mutexLog);
     pthread_mutex_destroy(&mutexCubos);
+    pthread_mutex_destroy(&mutexSin);
+    pthread_mutex_destroy(&mutexFactorial);
+    pthread_mutex_destroy(&mutexPentagonal);
+    pthread_mutex_destroy(&mutexPentagonal2);
 
     return 0;
 }
