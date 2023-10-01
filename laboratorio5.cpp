@@ -148,6 +148,31 @@ long long calcularPromedio(long long resultado1, long long resultado2, long long
     return (resultado1 + resultado2 + resultado3 + resultado4 + resultado5 + resultado6 + resultado7 + resultado8 + resultado9 + resultado10 + resultado11 + resultado12) / 12;
 }
 
+// MAXIMO
+// Funcion que calcula el maximo de los resultados de un arreglo
+int calcularMaximo(int* resultados, int numHilos) {
+    int maximo = resultados[0];
+    for (int i = 1; i < numHilos; ++i) {
+        if (resultados[i] > maximo) {
+            maximo = resultados[i];
+        }
+    }
+    return maximo;
+}
+
+// MINIMO
+// Funcion que calcula el minimo de los resultados de un arreglo
+int calcularMinimo(int* resultados, int numHilos) {
+    int minimo = resultados[0];
+    for (int i = 1; i < numHilos; ++i) {
+        if (resultados[i] < minimo) {
+            minimo = resultados[i];
+        }
+    }
+    return minimo;
+}
+
+
 // Estructura para pasar argumentos a la función de trabajo del hilo
 struct ThreadArgs {
     long long nInicio;
@@ -284,6 +309,7 @@ int main() {
     printf("BIENVENIDO USUARIO!\n");
     printf("Este programa calcula las sumatorias en paralelo en un rango dado definido por ti.\n");
     printf("Estas son las sumatorias que se calcularan: .\n");
+    printf("\n");
     printf("1. Sumatoria de números naturales desde n hasta limite superior.\n");
     printf("2. Sumatoria de n^2 desde n hasta limite superior.\n");
     printf("3. Sumatoria de n/2 desde n hasta limite superior.\n");
@@ -566,6 +592,47 @@ int main() {
     printf("\n");
     printf("---PROMEDIO DE LOS RESULTADOS--------------\n");
     cout << "Promedio de los resultados: " << promedio << endl;
+    printf("\n");
+
+    int resultados[12];
+    resultados[0] = resultadoNaturales;
+    resultados[1] = resultadoCuadrados;
+    resultados[2] = resultadoDivididos;
+    resultados[3] = resultadoInversos;
+    resultados[4] = resultadoRaiz;
+    resultados[5] = resultadoDivididos2;
+    resultados[6] = resultadoLog;
+    resultados[7] = resultadoCubos;
+    resultados[8] = resultadoSin;
+    resultados[9] = resultadoFactorial;
+    resultados[10] = resultadoPentagonal;
+    resultados[11] = resultadoPentagonal2;
+
+    // Calcular el máximo de los resultados
+    int maximo = resultados[0];
+    for (int i = 1; i < 12; ++i) {
+        if (resultados[i] > maximo) {
+            maximo = resultados[i];
+        }
+    }
+
+    // Imprimir el máximo de los resultados
+    printf("---MÁXIMO DE LOS RESULTADOS----------------\n");
+    cout << "Máximo de los resultados: " << calcularMaximo(resultados, 12) << endl;
+    printf("\n");
+
+    // Calcular el mínimo de los resultados
+    int minimo = resultados[0];
+    for (int i = 1; i < 12; ++i) {
+        if (resultados[i] < minimo) {
+            minimo = resultados[i];
+        }
+    }
+
+    // Imprimir el mínimo de los resultados
+    printf("---MÍNIMO DE LOS RESULTADOS----------------\n");
+    cout << "Mínimo de los resultados: " << calcularMinimo(resultados, 12) << endl;
+    printf("\n");
 
     // Liberar memoria
     delete[] threadsNaturales;
