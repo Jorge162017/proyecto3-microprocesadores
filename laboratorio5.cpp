@@ -326,13 +326,39 @@ int main() {
     printf("Por favor ingresa los datos que se te piden a continuación.\n");
     printf("----------------------------------\n");
 
-    // Se piden los límites superior e inferior
-    cout << "Ingrese el límite inferior: " << endl;
-    cin >> limiteInferior;
-    cout << "Ingrese el límite superior: " << endl;
-    cin >> limiteSuperior;
+    do {
+        cout << "Ingrese el límite inferior: " << endl;
+        cin >> limiteInferior;
 
-    printf("\n");
+        if (limiteInferior < 0) {
+            cout << "El límite inferior debe ser mayor que 0" << endl;
+        }
+
+        if (cin.fail()) {
+            cout << "El límite inferior debe ser un número" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (limiteInferior < 0 || cin.fail());
+
+    do {
+        cout << "Ingrese el límite superior: " << endl;
+        cin >> limiteSuperior;
+
+        if (limiteSuperior <= limiteInferior) {
+            cout << "El límite superior debe ser mayor que el límite inferior" << endl;
+        }
+
+        if (cin.fail()) {
+            cout << "El límite superior debe ser un número" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (limiteSuperior <= limiteInferior || cin.fail());
+
+    // El programa continuará aquí después de que se ingresen límites válidos
+    cout << "Límite inferior: " << limiteInferior << endl;
+    cout << "Límite superior: " << limiteSuperior << endl;
 
     // Se inicia a calcular el tiempo de ejecución de la primera sumatoria
     auto startTimeSumatoria1 = high_resolution_clock::now();
